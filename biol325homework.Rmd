@@ -1,0 +1,227 @@
+---
+title: "BIOL 325 Lab 2"
+author: "Evelyn Basham"
+date: "January 31, 2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Lab 2
+### Foundations for statistical inference - Sampling distributions
+### Exercises
+
+#### #1
+
+This distribution is skewed right. 
+
+```{r}
+download.file("http://www.openintro.org/stat/data/ames.RData", destfile = "ames.RData")
+load("ames.RData")
+area <- ames$Gr.Liv.Area
+price <- ames$SalePrice
+summary(area)
+hist(area)
+```
+
+#### #2
+
+It is more normally distributed than the population, but it still features a bit of a right skew. 
+
+```{r}
+samp1 <- sample(area, 50)
+hist(samp1)
+```
+
+#### #3
+
+The mean for the first sample is higher than for the second. The sample size of 1000 would be the most accurate option. 
+
+```{r}
+samp2 <- sample(area, 50)
+mean(samp1)
+mean(samp2)
+```
+
+#### #4
+
+There are 5000 elements in sample_means50. This is a fairly normally distributed distribution, centered at a mean of 1500. I would expect the distribution to be even more normally distributed if we collected 50,000 sample means. 
+```{r}
+sample_means50 <- rep(NA, 5000)
+
+for(i in 1:5000){
+   samp <- sample(area, 50)
+   sample_means50[i] <- mean(samp)
+}
+hist(sample_means50, breaks = 25)
+```
+
+#### #5
+Each element of sample_means_small is a randomly generated mean from the area vector initialized above. There are 100 elements in sample_means_small.
+```{r}
+sample_means_small <- rep(0, 100)
+
+for(i in 1:100){
+   samp <- sample(area, 50)
+   sample_means_small[i] <- mean(samp)
+}
+
+sample_means_small
+length(sample_means_small)
+```
+
+#### #6
+
+The center estimate does not change, at least significantly. The spread becomes more narrow. 
+
+
+### On Your Own
+#### #1
+
+**Take a random sample of size 50 from price. Using this sample, what is your best point estimate of the population mean?**
+
+Point estimate of population mean = $180,796.10
+```{r}
+set.seed(42)
+load("ames.RData")
+sampleprice=sample(ames$SalePrice)
+mean(sampleprice)
+```
+
+
+#### #2
+
+**Since you have access to the population, simulate the sampling distribution for x?price by taking 5000 samples from the population of size 50 and computing 5000 sample means. Store these means in a vector called sample_means50. Plot the data, then describe the shape of this sampling distribution. Based on this sampling distribution, what would you guess the mean home price of the population to be? Finally, calculate and report the population mean.**
+
+The sampling distribution is approximately normally distributed. I'd guess the mean to be the mode of the sampling distribution, which is just less than 180k dollars. The mean home price of the population is $180796.10. 
+
+```{r}
+set.seed(42)
+sample_means50 <- rep(NA, 5000)
+
+for(i in 1:5000){
+   samp <- sample(ames$SalePrice, 50)
+   sample_means50[i] <- mean(samp)
+}
+
+hist(sample_means50, xlab="Ames Home Price Means in Dollars", main="Sampling Distribution for Home Price, n=50", col="blue")
+mean(ames$SalePrice)
+```
+
+
+#### #3
+
+**Change your sample size from 50 to 150, then compute the sampling distribution using the same method as above, and store these means in a new vector called sample_means150. Describe the shape of this sampling distribution, and compare it to the sampling distribution for a sample size of 50. Based on this sampling distribution, what would you guess to be the mean sale price of homes in Ames?**
+
+Immediately, a difference in price between the distributions is apparent. The sample size of 150 means are lower than those for samples of 50. Both distributions are approximately normally distributed. Based on this sampling distribution, I guess that the mean sale price of homes in Ames is also slightly more than 180k dollars.  
+
+```{r}
+sample_means150 <- rep(NA, 5000)
+set.seed(42)
+for(i in 1:5000){
+   samp <- sample(ames$SalePrice, 150)
+   sample_means150[i] <- mean(samp)
+}
+
+hist(sample_means150, xlab="Ames Home Price Means in Dollars", main="Sampling Distribution for Home Price, n=150", col="red")
+
+```
+
+
+#### #4
+
+**Of the sampling distributions from 2 and 3, which has a smaller spread? If we're concerned with making estimates that are more often close to the true value, would we prefer a distribution with a large or small spread?**
+
+When the sample size is larger, the spread is smaller. So, 3 has a smaller spread. If we're concerned with making estimates that are more often close to the true value, we'd want a distribution with a smaller spread. 
+
+## Lab 2
+### Foundations for statistical inference - Confidence intervals
+
+### Exercises
+
+#### #1
+
+The distribution is not normally distributed, because it experiences a right skew. A "typical" size in my sample is 1438 square feet. 
+
+```{r}
+set.seed(10)
+population <- ames$Gr.Liv.Area
+sampl2 <- sample(population, 60)
+hist(sampl2)
+mean(sampl2)
+```
+
+#### #2
+
+Because the sample is randomly selected, I would not expect another student's distribution to be the same as mine. It is likely to be similar in terms of general characteristics, like right skew, because even "random" sample selection isn't truly random due to the nature of the algorithm used to compute random numbers. 
+
+
+#### #3
+In order for the sample mean to be normally distributed and have a standard error = s/sqrt(n), sample size must be equal than or greater than approximately 30. We must also assume that the population itself is normally distributed. 
+
+#### #4
+
+95% Confidence implies that we can be 95% confident that the true population parameter will fall into the calculated interval.
+
+#### #5
+
+I don't need to compute a confidence interval in order to know that if I calculated a 95% confidence interval for the average size of houses in Ames, I could be 95% confident that the true value would fall within the bounds of this interval. I am not working in a classroom right now, but I'm certain that my classmates would not get the same exact CI as me.
+
+#### #6
+
+0.95, because 95% Confidence implies that we can be 95% confident that the true population parameter will fall into the calculated interval. Unfortunately, I am not working with a group on this. 
+
+
+### On Your Own
+#### #1
+
+**Using the following function (which was downloaded with the data set), plot all intervals. What proportion of your confidence intervals include the true population mean? Is this proportion exactly equal to the confidence level? If not, explain why.**
+
+The proportion of confidence intervals that include the true population mean is 48/50 = 0.96. This proportion is not exactly equal to the 95% confidence interval, it is higher. This is because we are dealing with a sampling distribution constructed from only 50 sample means, in the face of a theory that depends on infinitely many sample means used to construct the distribution. 
+
+```{r}
+set.seed(42)
+population <- ames$Gr.Liv.Area
+samp_mean <- rep(NA, 50)
+samp_sd <- rep(NA, 50)
+n <- 60
+for(i in 1:50){
+  samp <- sample(population, n) # obtain a sample of size n = 60 from the population
+  samp_mean[i] <- mean(samp)    # save sample mean in ith element of samp_mean
+  samp_sd[i] <- sd(samp)        # save sample sd in ith element of samp_sd
+}
+lower_vector <- samp_mean - 1.96 * samp_sd / sqrt(n) 
+upper_vector <- samp_mean + 1.96 * samp_sd / sqrt(n)
+c(lower_vector[1], upper_vector[1])
+plot_ci(lower_vector, upper_vector, mean(population))
+```
+
+
+#### #2
+
+**Pick a confidence level of your choosing, provided it is not 95%. What is the appropriate critical value?**
+
+2.58 (using a 99% CI). 
+
+#### #3
+**Calculate 50 confidence intervals at the confidence level you chose in the previous question. You do not need to obtain new samples, simply calculate new intervals based on the sample means and standard deviations you have already collected. Using the plot_ci function, plot all intervals and calculate the proportion of intervals that include the true population mean. How does this percentage compare to the confidence level selected for the intervals?**
+
+99% of the calculated confidence intervals encompass the population mean. This percentage is equal to the confidence level selected for the intervals (99%).
+
+```{r}
+set.seed(42)
+n <- 60
+for(i in 1:50){
+  samp <- sample(population, n) # obtain a sample of size n = 60 from the population
+  samp_mean[i] <- mean(samp)    # save sample mean in ith element of samp_mean
+  samp_sd[i] <- sd(samp)        # save sample sd in ith element of samp_sd
+}
+lower_vector <- samp_mean - 2.58 * samp_sd / sqrt(n) 
+upper_vector <- samp_mean + 2.58 * samp_sd / sqrt(n)
+c(lower_vector[1], upper_vector[1])
+plot_ci(lower_vector, upper_vector, mean(population))
+```
+
